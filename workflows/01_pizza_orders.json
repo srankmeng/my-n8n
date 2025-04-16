@@ -1,0 +1,529 @@
+{
+  "name": "Pizza orders",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Pizza orders",
+        "formDescription": "Place your pizza order here",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your name",
+              "placeholder": "Enter your name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Pizza",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Margherita"
+                  },
+                  {
+                    "option": "Peperoni"
+                  },
+                  {
+                    "option": "Hawaiian"
+                  },
+                  {
+                    "option": "Veggie"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Size",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Small"
+                  },
+                  {
+                    "option": "Medium"
+                  },
+                  {
+                    "option": "Large"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "orders"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "5d4b1086-6d93-4205-976e-625fda22ce8c",
+      "name": "Receive order",
+      "webhookId": "4ab93fc7-677f-414e-ad63-fb29392a32a6",
+      "notesInFlow": true,
+      "notes": "Pizza order form"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM",
+          "mode": "list",
+          "cachedResultName": "n8n pizza order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pizza": "={{ $('Receive order').item.json.Pizza }}",
+            "Size": "={{ $('Receive order').item.json.Size }}",
+            "Order date": "={{ $json.submittedDate }}",
+            "Name": "={{ $('Receive order').item.json['Your name'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pizza",
+              "displayName": "Pizza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Size",
+              "displayName": "Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        360,
+        0
+      ],
+      "id": "a3a048a6-c4e6-46b0-a244-3807f643fa83",
+      "name": "Google Sheets",
+      "notesInFlow": true,
+      "credentials": {
+        "googleApi": {
+          "id": "Vd6pC2DssE3Ue8MQ",
+          "name": "Google Service Account account"
+        }
+      },
+      "notes": "Record orders"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6332706a-470c-4f30-8992-53e77cfdbb5b",
+              "leftValue": "={{ $json.Pizza }}",
+              "rightValue": "Veggie",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "4c6f79ad-5911-4c71-8dc5-9e2870713bf2",
+              "leftValue": "={{ $json.Size }}",
+              "rightValue": "Small",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        540,
+        0
+      ],
+      "id": "36d89b30-43f3-42f0-a09c-1fb8024eb5ba",
+      "name": "If",
+      "notesInFlow": true,
+      "notes": "Condition veggie & small is out of stock"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.submittedAt }}",
+        "format": "custom",
+        "customFormat": "dd/MM/yyyy HH:mm:ss",
+        "outputFieldName": "submittedDate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        140,
+        0
+      ],
+      "id": "6ffcc312-d076-4313-8272-86c9007ef063",
+      "name": "Convert submit date format",
+      "notesInFlow": true,
+      "alwaysOutputData": false,
+      "notes": "Convert submit date format"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM",
+          "mode": "list",
+          "cachedResultName": "n8n pizza order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Remark": "Cancelled order: Unavailable",
+            "Order date": "={{ $json['Order date'] }}"
+          },
+          "matchingColumns": [
+            "Order date"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Pizza",
+              "displayName": "Pizza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Size",
+              "displayName": "Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Remark",
+              "displayName": "Remark",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        760,
+        -120
+      ],
+      "id": "72281901-89bc-423e-9359-0340affa91bd",
+      "name": "Update record with cancelleld order",
+      "notesInFlow": false,
+      "credentials": {
+        "googleApi": {
+          "id": "Vd6pC2DssE3Ue8MQ",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Update record with cancelleld order"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM",
+          "mode": "list",
+          "cachedResultName": "n8n pizza order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cR8j7qSgsebh2nPiGR77LDKGhZDHcMWoDV5gXPRErwM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Remark": "Confirmed order",
+            "Order date": "={{ $json['Order date'] }}"
+          },
+          "matchingColumns": [
+            "Order date"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Pizza",
+              "displayName": "Pizza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Size",
+              "displayName": "Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Remark",
+              "displayName": "Remark",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        760,
+        80
+      ],
+      "id": "de76397a-9768-43c8-bc90-6bc406bb6a54",
+      "name": "Update record with confirmed order",
+      "notesInFlow": false,
+      "credentials": {
+        "googleApi": {
+          "id": "Vd6pC2DssE3Ue8MQ",
+          "name": "Google Service Account account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive order": {
+      "main": [
+        [
+          {
+            "node": "Convert submit date format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update record with cancelleld order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update record with confirmed order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert submit date format": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Bangkok",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "79a2532d-5817-476b-ba7b-5c336958e253",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e290693d6d6c2ceb8ce87bd5062de73f4fcbf9c31701f6c0a38e72af1c36dd8"
+  },
+  "id": "jMIpoEse0RCn0sqt",
+  "tags": [
+    {
+      "createdAt": "2025-04-15T05:38:24.081Z",
+      "updatedAt": "2025-04-15T05:38:24.081Z",
+      "id": "H8V0aChgoUCLHmY8",
+      "name": "orders"
+    }
+  ]
+}
