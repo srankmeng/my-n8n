@@ -30,8 +30,8 @@ Then go to <http://localhost:5678>
 
 ### 02 LLM sentiment webhook
 
-![LLM sentiment webhook](./images/02_llm_sentiment_webhook.png)
+![LLM sentiment webhook](./images/02_LLM_sentiment_webhook.png)
 
 ### 03 LLM sentiment form submission
 
-![LLM sentiment form submission](./images/03_llm_sentiment_form_submission.png)
+![LLM sentiment form submission](./images/03_LLM_sentiment_form_submission.png)
