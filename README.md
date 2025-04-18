@@ -24,6 +24,14 @@ Then go to <http://localhost:5678>
 
 ## Example
 
-### pizza orders
+### 01 pizza orders
 
 ![pizza order workflow](./images/01_pizza_order_workflow.png)
+
+### 02 LLM sentiment webhook
+
+![LLM sentiment webhook](./images/02_llm_sentiment_webhook.png)
+
+### 03 LLM sentiment form submission
+
+![LLM sentiment form submission](./images/03_llm_sentiment_form_submission.png)
