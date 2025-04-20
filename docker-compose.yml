@@ -18,13 +18,13 @@ services:
       - GENERIC_TIMEZONE=UTC
     volumes:
       - ./n8n:/home/node/.n8n
-  postgres:
-    image: postgres:latest
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    ports:
-      - "5434:5432"
-    volumes:
-      - ./init_db:/docker-entrypoint-initdb.d/
+  # postgres:
+  #   image: postgres:latest
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=postgres
+  #   ports:
+  #     - "5434:5432"
+  #   volumes:
+  #     - ./init_db:/docker-entrypoint-initdb.d/

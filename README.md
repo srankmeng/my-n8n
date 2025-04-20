@@ -1,6 +1,6 @@
 # My n8n
 
-This repository contains an N8N workflow that listens to Google Forms submissions and sends the form data to a Google Sheets document.
+This repository contains an N8N workflow.
 
 ## How to start
 
@@ -14,24 +14,50 @@ Then go to <http://localhost:5678>
 
 ### Create credentials
 
-- Google Service Account
-- Gemini API token
+- Google Service Account API key
+- Google Drive OAuth Key
+- Gemini API key
+- Ollama
+- Pinecone API key
+- OpenAI API key
+- Postgres
 
 ### Create the workflows
 
 - Create from scratch
 - Create from import json file (you use json from [workflows folder](./workflows))
 
-## Example
+## Example workflows
 
 ### 01 pizza orders
 
-![pizza order workflow](./images/01_pizza_order_workflow.png)
+Order form submission then send order to Google Sheets
+
+![pizza order workflow](./images/01_pizza_order_workflow/workflow.png)
+![pizza order google sheet](./images/01_pizza_order_workflow/google_sheet.png)
 
 ### 02 LLM sentiment webhook
 
-![LLM sentiment webhook](./images/02_LLM_sentiment_webhook.png)
+Restful sent the review for return sentiment
+
+![LLM sentiment webhook](./images/02_LLM_sentiment_webhook/workflow.png)
 
 ### 03 LLM sentiment form submission
 
-![LLM sentiment form submission](./images/03_LLM_sentiment_form_submission.png)
+Review form submission then keep sentiment to database
+
+![LLM sentiment form submission](./images/03_LLM_sentiment_form_submission/workflow.png)
+
+### 04 Updated Google drive as RAG
+
+When added file to Google drive, update to Pinecone vector store automatically
+
+![Updated Google drive as RAG](./images/04_updated_drive_to_RAG/workflow.png)
+
+### 05 Restaurant chatbot
+
+Restaurant chatbot assistant for provide information to user, embeded in website
+
+![Restaurant chatbot workflow](./images/05_Restaurant_chatbot/workflow.png)
+![Restaurant chatbot conversation](./images/05_Restaurant_chatbot/chat.png)
+
