@@ -67,3 +67,10 @@ Auto draft to reply email when received email about sponsorship opportunity
 
 ![auto draft to reply email workflow](./images/06_auto_draft_reply_email/workflow.png)
 ![auto draft to reply email](./images/06_auto_draft_reply_email/draft_email.png)
+
+### 07 Multi agent
+
+Multi agent include supervisor agent and email agent
+
+![supervisor agent workflow](./images/07_multi_agent/supervisor_agent_workflow.png)
+![email agent workflow](./images/07_multi_agent/email_agent_worklow.png)

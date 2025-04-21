@@ -1,0 +1,209 @@
+{
+  "name": "07 Muti agent: Supervisor agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "72c86cac-200f-41ea-a0ec-6efbf66cff16",
+      "name": "When chat message received",
+      "webhookId": "ba24d16a-d8da-4b15-89ff-7cf951f7578f"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        220
+      ],
+      "id": "ba273732-9bdc-42de-8c3f-0383d7e36973",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        480,
+        220
+      ],
+      "id": "125d3934-f7bf-4797-a4b1-da32392cec8b",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        580,
+        220
+      ],
+      "id": "26ab4a68-d756-4abb-b57c-1188b2bbeb12",
+      "name": "Google search",
+      "credentials": {
+        "serpApi": {
+          "id": "HjRA6pybfKHcLR5H",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Role\n- You are an AI agent called Dan\n- Your job is to orchestrate the activities between different agents and then formuate a friendly response back to the user.\n- You should never write emails. create content, create summaries yourself. Your job is to called agents and tools in the correct sequence.\n- Think carefully about the sequence of the events. Some tools might require you to first call another tool in order to pass it the correct information.\n\n# Additional information\n- You are talking to Meng.\n- The current date and time is {{ $now.toString() }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        240,
+        0
+      ],
+      "id": "3fbc6112-8c53-4e26-ac81-0c9400e9adc8",
+      "name": "Supervisor"
+    },
+    {
+      "parameters": {
+        "name": "email_agent",
+        "description": "Use this tool when related to email actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "MPesZacT0mJzlGsP",
+          "mode": "list",
+          "cachedResultName": "07 Muti agent: Email agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        220
+      ],
+      "id": "02abece9-efb0-4083-9f35-9ff474a9a685",
+      "name": "Email"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        220
+      ],
+      "id": "db1f618f-7b0b-4901-baea-100707c4b016",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "N7zI62i0cF228HKn",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fcb3cc24-0b0b-4100-b1c8-c3a061bc5d8e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e290693d6d6c2ceb8ce87bd5062de73f4fcbf9c31701f6c0a38e72af1c36dd8"
+  },
+  "id": "AhWYaE2YAHfbomrB",
+  "tags": []
+}
