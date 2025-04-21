@@ -1,0 +1,433 @@
+{
+  "name": "06 auto draft to reply email",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        0
+      ],
+      "id": "1f8f30e8-457e-4d0a-b89d-1d721371d8da",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "A7iGx02Dg891RIqA",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0391974d-c2d7-4430-bbd1-93526dbf7b1c",
+              "name": "Email context",
+              "value": "=Sender email address:\n{{ $json.from.value[0].address }}\n\nEmail subject:\n{{ $json.subject }}\n\nEmail body:\n{{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        0
+      ],
+      "id": "15761747-b594-437f-a3f8-902052530326",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your role is to determine if an email is related to a sponsorship deal or not.\n\nResponse with a JSON object with the following fields:\n- isSponsorship: which can be either true or false.\n- resoning: explain your answer.\n- leadName: the name of the person as per the email body, leave blank if not a sponsor email. \n- leadCompany: the company wanting to sponsors, leave blank if not a sponsor email. \n\nThink carefully about your answer.\n\n{{ $json['Email context'] }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        480,
+        0
+      ],
+      "id": "c6808e70-3fdc-4c99-ae1b-ec12d1547e6b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-exp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        508,
+        220
+      ],
+      "id": "c4b16f14-713f-461a-91e4-f99bc5ae5a61",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c0EsoICbaQUFDRY7",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"isSponsorship\": {\n\t\t\t\"type\": \"boolean\"\n\t\t},\n      \"resoning\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"leadName\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"leadCompny\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        628,
+        220
+      ],
+      "id": "1bc645fb-1f52-45a8-aee0-777154218388",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "89b92038-c559-4a7f-b028-ce1e0e3c1da3",
+              "leftValue": "={{ $json.output.isSponsorship }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "172a81f8-0104-49cd-ae44-7bc84f033fe5",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        980,
+        100
+      ],
+      "id": "ffd252e2-bec7-4c96-9b23-dd6b962eed56",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "sponsors",
+          "mode": "list",
+          "cachedResultName": "sponsors"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "reason": "={{ $json.output.resoning }}",
+            "email": "={{ $('Gmail Trigger').item.json.from.value[0].address }}",
+            "name": "={{ $json.output.leadName }}",
+            "company": "={{ $json.output.leadCompny }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created",
+              "displayName": "created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated",
+              "displayName": "updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        980,
+        -100
+      ],
+      "id": "f701a4b8-e117-4128-908e-586e9516a75e",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "07pR1Q22nXZc6vVR",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You work for a Youtube channel called Meng studio.\nYour role is to respond to sponsorship opportunities by drafting a response email.\n\nCarefully have a look at the below email context and rite a friendly and professional email.\nOnly return the body of the email in HTML format. Do not write a header, only the body! Do not include things like ```html.\nThe email should include information about sponsorship rates and the terms and conditions\n\n# Sponsorship terms for Meng studio Youtube channel\n\n## Channel overview\n- Channel Name: Meng studio\n- Subscribers: 20,000+\n- Average view: 2,000 - 5,000 per video\n- Content: Programming education\n\n## Sponsorship rates\n- Dedicated video: $500 - $1,000\n- Integrated sponsorship (30-60 second segment): $200 - $600\n\n*Note: Rates may very based on specific requirements and current channel metrics.*\n\n## Terms and conditions\n\n### 1. Creative control\nAll video content, including script, visuals, and editing, will be created solely by Meng studion. The final video will align wuth the channel's established style and tone.\n\n### 2. Approval process\nSponsor will receive one draft of the sponsored content segment for factual accuracy review only. No stylistic change will be made unless the correct factual errors about the product or service.\n\n### 3. Title and thumbnail\nVideo title and thumbnail will be created by Meng studio to maintain",
+              "role": "system"
+            },
+            {
+              "content": "=EMAIL CONTEXT:\n\n{{ $('Edit Fields').item.json['Email context'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1140,
+        -100
+      ],
+      "id": "9dd435da-df8e-4dc7-911c-4b8f32a10a6d",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "N7zI62i0cF228HKn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: {{ $('Gmail Trigger').item.json.headers.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.message.content }}",
+        "options": {
+          "threadId": "={{ $('Gmail Trigger').item.json.threadId }}",
+          "sendTo": "={{ $('Gmail Trigger').item.json.from.value[0].address }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        -100
+      ],
+      "id": "ad4f4044-0410-499e-8923-f5bd2f591850",
+      "name": "Gmail",
+      "webhookId": "f2f4be72-d245-4c48-96f5-dd9770e0d7d1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "A7iGx02Dg891RIqA",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f3947f96-e3d7-4e38-9f13-62aafe9fb2d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e290693d6d6c2ceb8ce87bd5062de73f4fcbf9c31701f6c0a38e72af1c36dd8"
+  },
+  "id": "oTveccyeWHymZqaF",
+  "tags": []
+}

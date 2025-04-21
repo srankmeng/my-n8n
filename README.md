@@ -58,6 +58,12 @@ When added file to Google drive, update to Pinecone vector store automatically
 
 Restaurant chatbot assistant for provide information to user, embeded in website
 
-![Restaurant chatbot workflow](./images/05_Restaurant_chatbot/workflow.png)
-![Restaurant chatbot conversation](./images/05_Restaurant_chatbot/chat.png)
+![Restaurant chatbot workflow](./images/05_restaurant_chatbot/workflow.png)
+![Restaurant chatbot conversation](./images/05_restaurant_chatbot/chat.png)
 
+### 06 auto draft to reply email
+
+Auto draft to reply email when received email about sponsorship opportunity
+
+![auto draft to reply email workflow](./images/06_auto_draft_reply_email/workflow.png)
+![auto draft to reply email](./images/06_auto_draft_reply_email/draft_email.png)
