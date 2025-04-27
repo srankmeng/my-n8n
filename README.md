@@ -74,3 +74,9 @@ Multi agent include supervisor agent and email agent
 
 ![supervisor agent workflow](./images/07_multi_agent/supervisor_agent_workflow.png)
 ![email agent workflow](./images/07_multi_agent/email_agent_worklow.png)
+
+### 08 Form upload to RAG
+
+Browsing document files then update to vector store (RAG)
+
+![upload to RAG workflow](./images/08_form_upload_to_RAG/workflow.png)
