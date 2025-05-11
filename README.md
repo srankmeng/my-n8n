@@ -80,3 +80,17 @@ Multi agent include supervisor agent and email agent
 Browsing document files then update to vector store (RAG)
 
 ![upload to RAG workflow](./images/08_form_upload_to_RAG/workflow.png)
+
+### 09 F1 advisor (basic RAG)
+
+F1 advisor with basic RAG.
+
+Tutorial <https://www.youtube.com/watch?v=75lwkzFxyLs>
+
+![upload to RAG workflow](./images/09_F1_advisor_basic_RAG/workflow.png)
+
+### 10 F1 advisor (RAG pipeline)
+
+Improve from basic RAG, the pipeline manage file for prevent duplicate content
+
+![upload to RAG workflow](./images/10_F1_advisor_RAG_pipeline/workflow.png)

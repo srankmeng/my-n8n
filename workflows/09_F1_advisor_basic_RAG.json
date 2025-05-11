@@ -1,0 +1,417 @@
+{
+  "name": "09 F1 advisor",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -460,
+        240
+      ],
+      "id": "999e418b-97ca-4b0f-a0e6-8113021395ae",
+      "name": "When chat message received",
+      "webhookId": "cea3c94f-77ca-403a-8668-0e4045f6e410"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an F1 expert\n\nYou are tasked with answering a question using the provided information. Your goal is to provide an accurate answer based on the information\n\nIf you cannot answer the question using the provided chunks, say \"Sorry, I don't know.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -220,
+        240
+      ],
+      "id": "facd4d7c-3868-419c-8204-b6e9f89c432e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        460
+      ],
+      "id": "bb31c661-0c50-4425-810c-657acecbd562",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "N7zI62i0cF228HKn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -120,
+        460
+      ],
+      "id": "73c14869-f49e-455e-a49f-c4f625709fe6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        660
+      ],
+      "id": "9889de70-4d67-4eef-8642-bd43f4cac6ca",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "N7zI62i0cF228HKn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -280
+      ],
+      "id": "c71d298b-4369-442e-9253-c7736ee13683",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -60
+      ],
+      "id": "ec461b76-eddf-4921-9858-40b7216f634f",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "N7zI62i0cF228HKn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.fia.com/sites/default/files/documents/fia_2025_formula_1_technical_regulations_-_issue_03_-_2025-04-07.pdf",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -260,
+        -280
+      ],
+      "id": "8d207b28-7bd4-422b-a4f3-c2084f59cb08",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "#### URL pdf\n- https://www.fia.com/system/files/documents/fia_2025_formula_1_sporting_regulations_-_issue_5_-_2025-04-30.pdf\n- https://www.fia.com/system/files/documents/fia_formula_1_financial_regulations_-_issue_24_-_2025-04-30_0.pdf\n- https://www.fia.com/sites/default/files/documents/fia_2025_formula_1_technical_regulations_-_issue_03_-_2025-04-07.pdf\n\n",
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        -40
+      ],
+      "typeVersion": 1,
+      "id": "17cbdc93-1d9c-45fa-b245-e608727c0947",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        -280
+      ],
+      "id": "8fec2683-39b4-4074-aab6-d847b6810199",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "np5Fxc956MC9Nzij",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "f1_knowledgebase",
+        "toolDescription": "Retrieve relevant details on F1 with this tool",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        480
+      ],
+      "id": "42f15253-a3d9-46ed-8c11-91409a927d77",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "np5Fxc956MC9Nzij",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        608,
+        140
+      ],
+      "id": "8121c420-5c17-42bf-bafe-e45bedf4721c",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -57.5
+      ],
+      "id": "a16e7739-da87-4281-ac44-8c92757d3aec",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -280
+      ],
+      "id": "05f8e090-bd58-41b1-8fa7-56ab28accf47",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eec5b738-7413-436d-8171-b67acc5b5cca",
+              "name": "content",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        180,
+        -280
+      ],
+      "id": "9e7f0406-c09c-4a2c-87ee-6b28b19ab67c",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7b68a5bf-cc37-4c33-8d82-5008b6ca4a8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e290693d6d6c2ceb8ce87bd5062de73f4fcbf9c31701f6c0a38e72af1c36dd8"
+  },
+  "id": "afsXXyDIHaErf7sz",
+  "tags": []
+}
